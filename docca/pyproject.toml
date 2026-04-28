@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "API documentation portal for Django REST Framework — auto-syncs endpoints, renders a searchable portal with tags, parameters, and response fields."
 readme = "README.md"
 license = { text = "MIT" }
-authors = [{ name = "lxcor", email = "i.alves.alex@gmail.com" }]
+authors = [{ name = "Alexandre Scozzafave Alves", email = "frontdesk@lxcor.com" }]
 requires-python = ">=3.8"
 keywords = ["django", "drf", "api", "documentation", "portal"]
 classifiers = [
@@ -34,3 +34,7 @@ Repository = "https://github.com/lxcor/api-suite"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["docca*"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "settings_test"
+pythonpath = ["."]
