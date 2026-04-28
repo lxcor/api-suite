@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Throttling and quota enforcement for Django REST Framework — per-endpoint rate limits, tier-based quotas, and usage tracking."
 readme = "README.md"
 license = { text = "MIT" }
-authors = [{ name = "lxcor", email = "i.alves.alex@gmail.com" }]
+authors = [{ name = "Alexandre Scozzafave Alves", email = "frontdesk@lxcor.com" }]
 requires-python = ">=3.8"
 keywords = ["django", "drf", "throttling", "rate-limiting", "quota"]
 classifiers = [
@@ -35,3 +35,7 @@ Repository = "https://github.com/lxcor/api-suite"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["kotta*"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "settings_test"
+pythonpath = [".", "../reggi"]
