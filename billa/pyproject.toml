@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Credit-based billing for Django APIs — pluggable payment backends (Stripe, PayPal, stub), credit pack catalogue, and per-key balance tracking."
 readme = "README.md"
 license = { text = "MIT" }
-authors = [{ name = "lxcor", email = "i.alves.alex@gmail.com" }]
+authors = [{ name = "Alexandre Scozzafave Alves", email = "frontdesk@lxcor.com" }]
 requires-python = ">=3.8"
 keywords = ["django", "billing", "stripe", "paypal", "credits", "api"]
 classifiers = [
@@ -41,3 +41,7 @@ Repository = "https://github.com/lxcor/api-suite"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["billa*"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "settings_test"
+pythonpath = [".", "../reggi", "../kotta", "../docca"]
