@@ -1,0 +1,125 @@
+{% extends "docca/base.html" %}
+
+{% block title %}API Documentation{% endblock %}
+{% block meta_description %}<meta name="description" content="Full API reference for {{ site_name }}. Explore endpoints, request parameters, and response examples for astronomical computation and geographic reference data.">{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+
+  {# Sidebar #}
+  <div class="col-lg-2 d-none d-lg-block">
+    <div class="sidebar">
+
+      {# App filter #}
+      <p class="text-muted small text-uppercase fw-semibold mb-2">Apps</p>
+      <ul class="list-unstyled mb-4">
+        <li class="mb-1">
+          <a href="#" data-app-filter="all"
+             class="app-filter text-decoration-none small fw-semibold text-dark">All</a>
+        </li>
+        {% for app in app_labels %}
+          <li class="mb-1">
+            <a href="#" data-app-filter="{{ app }}"
+               class="app-filter text-decoration-none text-secondary small">{{ app }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+
+      {# Tag navigation #}
+      <p class="text-muted small text-uppercase fw-semibold mb-2">Sections</p>
+      <ul class="list-unstyled">
+        {% for group in tag_groups %}
+          <li class="mb-1">
+            <a href="#tag-{{ group.tag.slug }}" class="text-decoration-none text-secondary small tag-nav-link"
+               data-section="tag-{{ group.tag.slug }}">
+              {{ group.tag.name }}
+            </a>
+          </li>
+        {% endfor %}
+        {% if untagged %}
+          <li class="mb-1">
+            <a href="#tag-other" class="text-decoration-none text-secondary small tag-nav-link"
+               data-section="tag-other">Other</a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+
+  {# Main content #}
+  <div class="col-lg-10">
+
+    {% if not tag_groups and not untagged %}
+      <div class="text-muted py-5 text-center">
+        No published endpoints yet. Run <code>python manage.py syncdocs --all</code> to populate the portal.
+      </div>
+    {% endif %}
+
+    {% for group in tag_groups %}
+      <section id="tag-{{ group.tag.slug }}" class="mb-5">
+        <h4 class="mb-1">{{ group.tag.name }}</h4>
+        {% if group.tag.description %}
+          <p class="text-muted small mb-3">{{ group.tag.description }}</p>
+        {% endif %}
+
+        {% for ep in group.endpoints %}
+          {% include "docca/_endpoint_card.html" with ep=ep %}
+        {% endfor %}
+      </section>
+    {% endfor %}
+
+    {% if untagged %}
+      <section id="tag-other" class="mb-5">
+        <h4 class="mb-3">Other</h4>
+        {% for ep in untagged %}
+          {% include "docca/_endpoint_card.html" with ep=ep %}
+        {% endfor %}
+      </section>
+    {% endif %}
+
+  </div>
+</div>
+
+<script>
+(function () {
+  var filters = document.querySelectorAll('.app-filter');
+
+  function applyFilter(app) {
+    // Update active state
+    filters.forEach(function (f) {
+      var active = f.dataset.appFilter === app;
+      f.classList.toggle('fw-semibold', active);
+      f.classList.toggle('text-dark', active);
+      f.classList.toggle('text-secondary', !active);
+    });
+
+    // Show/hide cards
+    document.querySelectorAll('.endpoint-card[data-app]').forEach(function (card) {
+      var match = app === 'all' || card.dataset.app === app;
+      card.classList.toggle('d-none', !match);
+    });
+
+    // Show/hide sections that have no visible cards
+    document.querySelectorAll('section[id^="tag-"]').forEach(function (section) {
+      var hasVisible = section.querySelectorAll('.endpoint-card:not(.d-none)').length > 0;
+      section.style.display = hasVisible ? '' : 'none';
+    });
+
+    // Dim sidebar tag links for hidden sections
+    document.querySelectorAll('.tag-nav-link').forEach(function (link) {
+      var section = document.getElementById(link.dataset.section);
+      var hidden = section && section.style.display === 'none';
+      link.style.opacity = hidden ? '0.3' : '';
+      link.style.pointerEvents = hidden ? 'none' : '';
+    });
+  }
+
+  filters.forEach(function (f) {
+    f.addEventListener('click', function (e) {
+      e.preventDefault();
+      applyFilter(this.dataset.appFilter);
+    });
+  });
+})();
+</script>
+{% endblock %}

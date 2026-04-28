@@ -1,0 +1,59 @@
+{% extends "reggi/base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h4 class="card-title mb-4">Log in</h4>
+
+        {% if email_unverified %}
+          <div class="alert alert-warning">
+            Please verify your email address before logging in.
+            <a href="{% url 'reggi.email_verify_resend' %}">Resend verification email</a>
+          </div>
+        {% endif %}
+
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+              {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+            </div>
+          {% endif %}
+
+          <div class="mb-3">
+            <label class="form-label">Username</label>
+            {{ form.username }}
+            {% if form.username.errors %}
+              <div class="text-danger small mt-1">{{ form.username.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            {{ form.password }}
+            {% if form.password.errors %}
+              <div class="text-danger small mt-1">{{ form.password.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-primary">Log in</button>
+          </div>
+        </form>
+
+        <hr class="my-3">
+        <div class="text-center small">
+          <a href="{% url 'reggi.password_reset' %}">Forgot your password?</a>
+          &nbsp;·&nbsp;
+          <a href="{% url 'reggi.register' %}">Create an account</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

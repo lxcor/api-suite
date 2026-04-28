@@ -1,0 +1,42 @@
+{% extends "reggi/base.html" %}
+
+{% block title %}New API Key{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h4 class="card-title mb-4">Create a new API key</h4>
+
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label">Name</label>
+            {{ form.name }}
+            {% if form.name.errors %}
+              <div class="text-danger small mt-1">{{ form.name.errors.0 }}</div>
+            {% endif %}
+            <div class="form-text">{{ form.name.help_text }}</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Expires at <span class="text-muted">(optional)</span></label>
+            {{ form.expires_at }}
+            {% if form.expires_at.errors %}
+              <div class="text-danger small mt-1">{{ form.expires_at.errors.0 }}</div>
+            {% endif %}
+            <div class="form-text">{{ form.expires_at.help_text }}</div>
+          </div>
+
+          <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-primary">Create key</button>
+            <a href="{% url 'reggi.dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

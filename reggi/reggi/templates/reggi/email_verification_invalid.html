@@ -1,0 +1,20 @@
+{% extends "reggi/base.html" %}
+
+{% block title %}Invalid Verification Link{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="card border-danger shadow-sm">
+      <div class="card-body p-4 text-center">
+        <h4 class="card-title mb-3">Verification link invalid</h4>
+        <p class="text-muted">
+          This verification link is invalid or has expired.
+          You can request a new one below.
+        </p>
+        <a href="{% url 'reggi.email_verify_resend' %}" class="btn btn-primary mt-2">Resend verification email</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "reggi/base.html" %}
+{% load docca_tags %}
+
+{% block title %}API Keys{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+  <h4 class="mb-0">Your API Keys</h4>
+</div>
+
+{% try_include "billa/_dashboard_actions.html" %}
+
+{% if keys %}
+  <div class="table-responsive">
+    <table class="table table-bordered align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Name</th>
+          <th>Prefix</th>
+          <th>Created</th>
+          <th>Last used</th>
+          <th>Expires</th>
+          {% try_include "billa/_key_credits_th.html" %}
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for key in keys %}
+          <tr>
+            <td>{{ key.name }}</td>
+            <td><code>{{ key.prefix }}…</code></td>
+            <td>{{ key.created_at|date:"Y-m-d" }}</td>
+            <td>{% if key.last_used_at %}{{ key.last_used_at|date:"Y-m-d" }}{% else %}<span class="text-muted">Never</span>{% endif %}</td>
+            <td>{% if key.expires_at %}{{ key.expires_at|date:"Y-m-d" }}{% else %}<span class="text-muted">No expiry</span>{% endif %}</td>
+            {% try_include "billa/_key_credits.html" %}
+            <td>
+              {% if not key.credit_balance or key.credit_balance.purchase %}
+              <form method="post" action="{% url 'reggi.key_revoke' key.pk %}" onsubmit="return confirm('Revoke this key? This cannot be undone.');">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-danger btn-sm">Revoke</button>
+              </form>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="text-muted">You have no active API keys. <a href="{% url 'billa.pricing' %}">Purchase a credit pack</a> to get started.</div>
+{% endif %}
+{% endblock %}

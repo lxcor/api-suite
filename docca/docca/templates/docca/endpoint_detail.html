@@ -1,0 +1,190 @@
+{% extends "docca/base.html" %}
+{% load docca_tags %}
+
+{% block title %}{% if ep.summary %}{{ ep.summary }} — {% endif %}{{ ep.method }} {{ ep.path|clean_path }}{% endblock %}
+{% if ep.summary or ep.overview %}
+{% block meta_description %}<meta name="description" content="{{ ep.overview|default:ep.summary|truncatechars:160 }}">{% endblock %}
+{% block og_tags %}
+<meta property="og:type" content="article">
+<meta property="og:title" content="{% if ep.summary %}{{ ep.summary }} — {% endif %}{{ ep.method }} {{ ep.path|clean_path }}">
+<meta property="og:description" content="{{ ep.overview|default:ep.summary|truncatechars:160 }}">
+<meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+{% endblock %}
+{% endif %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <a href="{% url 'docca.portal' %}" class="text-decoration-none text-secondary small">← Back to docs</a>
+  <div class="d-flex align-items-center gap-2">
+    <span class="text-secondary small">endpoints</span>
+    {% if prev_ep %}
+      <a href="{% url 'docca.endpoint_detail' prev_ep.slug %}"
+         class="text-decoration-none text-secondary small"
+         title="{{ prev_ep.method }} {{ prev_ep.path|clean_path }}">&#9664;</a>
+    {% else %}
+      <span class="text-secondary small" style="opacity:.3;">&#9664;</span>
+    {% endif %}
+    {% if next_ep %}
+      <a href="{% url 'docca.endpoint_detail' next_ep.slug %}"
+         class="text-decoration-none text-secondary small"
+         title="{{ next_ep.method }} {{ next_ep.path|clean_path }}">&#9654;</a>
+    {% else %}
+      <span class="text-secondary small" style="opacity:.3;">&#9654;</span>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body p-4">
+
+    {# Header #}
+    <div class="d-flex align-items-center gap-3 mb-3">
+      {% with method=ep.method|lower %}
+        {% if method == 'get' %}
+          <span class="badge bg-primary fs-6">GET</span>
+        {% elif method == 'post' %}
+          <span class="badge bg-success fs-6">POST</span>
+        {% elif method == 'put' %}
+          <span class="badge bg-warning text-dark fs-6">PUT</span>
+        {% elif method == 'patch' %}
+          <span class="badge bg-warning text-dark fs-6">PATCH</span>
+        {% elif method == 'delete' %}
+          <span class="badge bg-danger fs-6">DELETE</span>
+        {% else %}
+          <span class="badge bg-secondary fs-6">{{ ep.method }}</span>
+        {% endif %}
+      {% endwith %}
+      <code class="fs-5">{{ ep.path|clean_path }}</code>
+    </div>
+
+    {% if ep.overview %}
+      <h1 class="h5 fw-normal my-2">{{ ep.overview|first_sentence }}</h1>
+    {% elif ep.summary %}
+      <h1 class="h5 fw-normal my-2">{{ ep.summary }}</h1>
+    {% endif %}
+
+    <div class="d-flex align-items-center gap-2 mb-3" style="min-height:1.75rem;">
+      <span class="badge {{ ep.app_label|app_badge_class }} border">{{ ep.app_label|title }}</span>
+      {% if ep.tag %}
+        <span class="badge bg-light text-dark border">{{ ep.tag.name }}</span>
+      {% endif %}
+    </div>
+
+    {# Section anchor nav #}
+    <div class="d-flex flex-wrap gap-3 mt-3 mb-1">
+      {% if ep.overview %}
+        <a href="#section-overview" class="text-decoration-none text-secondary small">Overview</a>
+      {% endif %}
+      <a href="#section-parameters" class="text-decoration-none text-secondary small">Parameters</a>
+      {% if ep.response_fields.exists %}
+        <a href="#section-response" class="text-decoration-none text-secondary small">Response</a>
+      {% endif %}
+      {% if ep.description %}
+        <a href="#section-notes" class="text-decoration-none text-secondary small">Technical notes</a>
+      {% endif %}
+    </div>
+
+    {% if ep.overview %}
+      <hr>
+      <h2 id="section-overview" class="text-muted text-uppercase small fw-semibold mb-2">Overview</h2>
+      <p style="white-space: pre-line;">{{ ep.overview|codify_params }}</p>
+    {% endif %}
+
+    {# Parameters #}
+    <hr>
+    <h2 id="section-parameters" class="text-muted text-uppercase small fw-semibold mb-3">Request parameters</h2>
+    {% if ep.parameters.exists %}
+      <table class="table table-sm table-bordered align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>In</th>
+            <th>Required</th>
+            <th>Description</th>
+            <th>Example</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for param in ep.parameters.select_related %}
+            <tr>
+              <td><code>{{ param.name }}</code></td>
+              <td><span class="text-muted small">{{ param.param_def.get_param_type_display }}</span></td>
+              <td><span class="badge bg-light text-dark border small">{{ param.get_location_display }}</span></td>
+              <td>
+                {% if param.required %}
+                  <span class="text-danger fw-semibold">Yes</span>
+                {% else %}
+                  <span class="text-muted">Optional</span>
+                {% endif %}
+              </td>
+              <td class="small">{{ param.effective_description|codify_params }}</td>
+              <td>{% if param.example %}<code>{{ param.example }}</code>{% endif %}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="text-muted small mb-0">This endpoint does not require any request parameters.</p>
+    {% endif %}
+
+    {# Response fields #}
+    {% if ep.response_fields.exists %}
+      <hr>
+      <h2 id="section-response" class="text-muted text-uppercase small fw-semibold mb-3">Response fields</h2>
+      <table class="table table-sm table-bordered align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Nullable</th>
+            <th>Description</th>
+            <th>Example</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for field in ep.response_fields.all %}
+            <tr>
+              <td><code>{{ field.name }}</code></td>
+              <td><span class="text-muted small">{{ field.get_data_type_display }}</span></td>
+              <td>
+                {% if field.nullable %}
+                  <span class="text-muted small">Yes</span>
+                {% else %}
+                  <span class="text-muted small">—</span>
+                {% endif %}
+              </td>
+              <td class="small">{{ field.description|codify_params }}</td>
+              <td>{% if field.example %}<code>{{ field.example }}</code>{% endif %}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+
+    {# Technical notes — implementation detail, shown last #}
+    {% if ep.description %}
+      <hr>
+      <h2 id="section-notes" class="text-muted text-uppercase small fw-semibold mb-2">Technical notes</h2>
+      <p class="text-muted small mb-0" style="white-space: pre-line;">{{ ep.description|codify_params }}</p>
+    {% endif %}
+
+  </div>
+</div>
+
+<button id="back-to-top"
+        onclick="window.scrollTo({top:0,behavior:'smooth'})"
+        class="btn btn-sm btn-dark"
+        style="position:fixed;bottom:2rem;right:2rem;display:none;opacity:.75;">
+  &#9650; Top
+</button>
+
+<script>
+  (function () {
+    var btn = document.getElementById('back-to-top');
+    window.addEventListener('scroll', function () {
+      btn.style.display = window.scrollY > window.innerHeight * 0.25 ? 'block' : 'none';
+    });
+  })();
+</script>
+{% endblock %}

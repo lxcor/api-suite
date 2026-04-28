@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% load humanize %}
+  <title>Usage — {{ site_name }}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light d-flex flex-column min-vh-100">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+  <div class="container d-flex align-items-center justify-content-between">
+    <a class="navbar-brand fw-semibold" href="/usage/">{{ site_name }}</a>
+    <div class="navbar-nav">
+      {% include "reggi/_navbar_user.html" %}
+    </div>
+  </div>
+</nav>
+
+<div class="container flex-grow-1">
+
+  <div class="mb-4">
+    <h4 class="mb-2">Usage</h4>
+    <div class="d-flex gap-3 mb-1">
+      <a href="{% url 'kotta.usage' %}"
+         class="text-muted text-decoration-none">By endpoint</a>
+      <a href="{% url 'billa.token_usage' %}"
+         class="fw-semibold text-dark text-decoration-none"
+         style="border-bottom:2px solid #212529; padding-bottom:2px;">Credits</a>
+    </div>
+    <p class="text-muted small mb-0">
+      Credit balance remaining per API key &middot; {{ today|date:"F j, Y" }}
+    </p>
+  </div>
+
+  {% if not rows %}
+    <div class="alert alert-info">No active credit balances found.</div>
+  {% else %}
+  <div class="card shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-sm table-hover align-middle mb-0">
+        <thead class="table-dark">
+          <tr>
+            <th>Token</th>
+            <th class="text-center" style="width:80px">Source</th>
+            <th class="text-center" style="width:100px">Tier</th>
+            <th style="width:260px">Balance</th>
+            <th class="text-center" style="width:80px">Remaining</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+          {% with b=row.balance k=row.key %}
+          <tr>
+            <td>
+              <span class="fw-medium">{{ k.name }}</span>
+              {% if b.is_default %}
+                <span class="badge bg-secondary ms-1" style="font-size:.65rem;">default</span>
+              {% endif %}
+              <br>
+              <code class="text-muted small">{{ k.prefix }}…</code>
+            </td>
+            <td class="text-center">
+              {% if row.is_paid %}
+                <span class="badge bg-success">purchase</span>
+              {% else %}
+                <span class="badge bg-secondary">signup</span>
+              {% endif %}
+            </td>
+            <td class="text-center">
+              {% if row.tier %}
+                <span class="badge bg-dark fw-normal">{{ row.tier.name }}</span>
+              {% else %}
+                <span class="text-muted small">—</span>
+              {% endif %}
+            </td>
+            <td>
+              {% with granted=row.granted remaining=b.credits_remaining %}
+              {% if granted > 0 %}
+                {% widthratio remaining granted 100 as bar_pct %}
+                <div class="d-flex align-items-center gap-2">
+                  <div class="progress flex-grow-1" style="height:6px;">
+                    <div class="progress-bar
+                      {% if bar_pct <= 10 %}bg-danger
+                      {% elif bar_pct <= 30 %}bg-warning
+                      {% else %}bg-success{% endif %}"
+                      style="width:{% if bar_pct > 100 %}100{% else %}{{ bar_pct }}{% endif %}%">
+                    </div>
+                  </div>
+                  <span class="text-muted small text-nowrap">{{ remaining|intcomma }} / {{ granted|intcomma }}</span>
+                </div>
+              {% else %}
+                <span class="text-muted small">—</span>
+              {% endif %}
+              {% endwith %}
+            </td>
+            <td class="text-center">
+              <span class="small fw-medium">{{ b.credits_remaining|intcomma }}</span>
+            </td>
+          </tr>
+          {% endwith %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

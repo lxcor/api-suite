@@ -1,0 +1,44 @@
+{% extends "reggi/base.html" %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h4 class="card-title mb-4">Account details</h4>
+
+        <dl class="row mb-0">
+          <dt class="col-sm-4">Username</dt>
+          <dd class="col-sm-8">{{ request.user.username }}</dd>
+
+          <dt class="col-sm-4">Email</dt>
+          <dd class="col-sm-8">{{ request.user.email }}</dd>
+
+          <dt class="col-sm-4">Joined</dt>
+          <dd class="col-sm-8">{{ request.user.date_joined|date:"N j, Y" }}</dd>
+
+          <dt class="col-sm-4">Last login</dt>
+          <dd class="col-sm-8">{{ request.user.last_login|date:"N j, Y, g:i a"|default:"—" }}</dd>
+
+          <dt class="col-sm-4">Active API keys</dt>
+          <dd class="col-sm-8">{{ active_key_count }}</dd>
+
+          {% if request.user.reggi_profile %}
+            <dt class="col-sm-4">Email verified</dt>
+            <dd class="col-sm-8">
+              {% if request.user.reggi_profile.email_verified %}
+                <span class="badge bg-success">Verified</span>
+              {% else %}
+                <span class="badge bg-warning text-dark">Not verified</span>
+                &nbsp;<a href="{% url 'reggi.email_verify_resend' %}" class="small">Resend</a>
+              {% endif %}
+            </dd>
+          {% endif %}
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

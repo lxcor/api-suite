@@ -1,0 +1,39 @@
+{% load humanize %}
+{% with balance=key.credit_balance %}
+{% if balance %}
+<td>
+  {% if balance.credits_remaining == 0 %}
+    <span class="badge bg-danger text-white">Exhausted</span>
+  {% else %}
+    <span class="text-body">{{ balance.credits_remaining|intcomma }}</span>
+    {% if balance.is_default %}
+      <span class="badge bg-secondary text-white ms-1">default</span>
+    {% endif %}
+  {% endif %}
+</td>
+<td>
+  {% if balance.purchase %}
+  <div class="d-flex gap-1 flex-wrap">
+    {% if not balance.is_default %}
+      <form method="post" action="{% url 'billa.set_default' balance.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-secondary btn-sm" title="Make this the default merge target">Set default</button>
+      </form>
+    {% endif %}
+    {% if not balance.is_default %}
+      <form method="post" action="{% url 'billa.merge' balance.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-primary btn-sm"
+          onclick="return confirm('Merge credits from this token into your default token? This token will be revoked.')">
+          Merge into default
+        </button>
+      </form>
+    {% endif %}
+  </div>
+  {% endif %}
+</td>
+{% else %}
+<td><span class="text-muted">—</span></td>
+<td></td>
+{% endif %}
+{% endwith %}

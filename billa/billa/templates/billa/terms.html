@@ -1,0 +1,103 @@
+{% extends "reggi/base.html" %}
+
+{% block title %}Payment Terms{% endblock %}
+{% block meta_robots %}<meta name="robots" content="index, follow">{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+
+    <h4 class="mb-1">Payment Terms</h4>
+    <p class="text-muted small mb-4">Last updated: April 2026</p>
+
+    <h5 class="mt-4">1. Service description</h5>
+    <p>
+      {{ merchant_name }} provides a prepaid API access service. Authenticated API requests
+      are metered against a credit balance tied to an API key. One credit is consumed per
+      authenticated request.
+    </p>
+
+    <h5 class="mt-4">2. Free tier</h5>
+    <p>
+      Each new account receives a fixed number of free credits upon registration.
+      No payment method is required to access the free tier. Free credits are
+      subject to the same consumption rules as purchased credits.
+    </p>
+
+    <h5 class="mt-4">3. Purchasing credits</h5>
+    <p>
+      Additional credits may be purchased in fixed-size packs. Available packs and their
+      current prices are listed on the <a href="{{ upgrade_url }}">pricing page</a>.
+      Purchases are one-time and processed by <strong>Stripe</strong> or
+      <strong>PayPal</strong>, third-party payment processors.
+      {{ merchant_name }} does not store card numbers or other payment credentials.
+      By completing a purchase you also agree to the terms of your chosen payment processor:
+      <a href="https://stripe.com/legal/consumer" target="_blank" rel="noopener">Stripe's Terms of Service</a>
+      or
+      <a href="https://www.paypal.com/us/legalhub/useragreement-full" target="_blank" rel="noopener">PayPal's User Agreement</a>.
+    </p>
+    <p>
+      Purchased credits are issued as a new API key. You may use that key independently
+      or merge its credits into an existing key from your dashboard without changing your
+      integration code.
+    </p>
+
+    <h5 class="mt-4">4. Pricing</h5>
+    <p>
+      The price of each credit pack is shown on the pricing page and confirmed at checkout
+      before payment is collected. Prices may change at any time. The price displayed at
+      the time of purchase is the price you pay.
+    </p>
+
+    <h5 class="mt-4">5. Refund policy</h5>
+    <p>
+      <strong>All purchases are final and non-refundable.</strong> Credits are a digital good
+      delivered immediately upon purchase. We do not offer refunds or exchanges for unused credits.
+      If you believe a charge was made in error, contact us at
+      {% if contact_email %}
+        <a href="mailto:{{ contact_email }}">{{ contact_email }}</a>
+      {% else %}
+        the address listed in our contact information
+      {% endif %}
+      within 14 days of the transaction and we will review your case.
+    </p>
+
+    <h5 class="mt-4">6. Credit expiry and forfeiture</h5>
+    <p>
+      Credits do not expire. However, credits are tied to an account and are non-transferable
+      outside of the merge feature available in your dashboard. If an account is terminated for
+      violation of these terms, any remaining credits are forfeited without refund.
+    </p>
+
+    <h5 class="mt-4">7. Credit exhaustion</h5>
+    <p>
+      When a key's credit balance reaches zero, the API returns
+      <strong>HTTP 402 Payment Required</strong>. Requests are not queued or deferred.
+      You may purchase additional credits at any time from the
+      <a href="{{ upgrade_url }}">pricing page</a>.
+    </p>
+
+    <h5 class="mt-4">8. Cancellation</h5>
+    <p>
+      There is no subscription. Each credit pack is a one-time purchase and there is nothing
+      to cancel. You may stop using the service at any time; unused credits remain in your
+      account indefinitely.
+    </p>
+
+    <h5 class="mt-4">9. Changes to these terms</h5>
+    <p>
+      {{ merchant_name }} reserves the right to modify these terms at any time. Continued use
+      of the service after a change constitutes acceptance of the revised terms. Material changes
+      will be communicated via email to registered account holders.
+    </p>
+
+    <h5 class="mt-4">10. Contact</h5>
+    {% if contact_email %}
+      <p>Questions about payments or these terms: <a href="mailto:{{ contact_email }}">{{ contact_email }}</a></p>
+    {% else %}
+      <p>Contact details are available on the site's main page.</p>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

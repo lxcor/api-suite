@@ -1,0 +1,28 @@
+{% extends "reggi/base.html" %}
+
+{% block title %}Resend Verification Email{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="card shadow-sm">
+      <div class="card-body p-4 text-center">
+        {% if sent %}
+          <h4 class="card-title mb-3">Verification email sent</h4>
+          <p class="text-muted">Check your inbox and click the link to verify your email address.</p>
+          <a href="{% url 'reggi.login' %}" class="btn btn-outline-primary mt-2">Back to login</a>
+        {% else %}
+          <h4 class="card-title mb-3">Resend verification email</h4>
+          <p class="text-muted mb-4">
+            We'll send a new verification link to <strong>{{ request.user.email }}</strong>.
+          </p>
+          <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Send verification email</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

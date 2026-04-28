@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% load humanize docca_tags %}
+  <title>Usage — {{ site_name }}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light d-flex flex-column min-vh-100">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+  <div class="container d-flex align-items-center justify-content-between">
+    <a class="navbar-brand fw-semibold" href="/usage/">{{ site_name }}</a>
+    <div class="navbar-nav">
+      {% include "reggi/_navbar_user.html" %}
+    </div>
+  </div>
+</nav>
+
+<div class="container flex-grow-1">
+
+  <div class="d-flex align-items-start justify-content-between mb-4">
+    <div>
+      <h4 class="mb-2">Usage</h4>
+      <div class="d-flex gap-3 mb-1">
+        <a href="{% url 'kotta.usage' %}"
+           class="fw-semibold text-dark text-decoration-none"
+           style="border-bottom:2px solid #212529; padding-bottom:2px;">By endpoint</a>
+        <a href="{% url 'billa.token_usage' %}"
+           class="text-muted text-decoration-none">Credits</a>
+      </div>
+      <p class="text-muted small mb-0">
+        Request counts per endpoint for the selected key{% if tier %}, against your {{ tier.name }} tier limits{% endif %} &middot; {{ today|date:"F j, Y" }}
+      </p>
+    </div>
+
+    {# Key selector — only shown when the user has more than one key #}
+    {% if user_keys|length > 1 %}
+    <div class="dropdown">
+      <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        {{ selected_key.name|truncatechars:28 }}
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        {% for key in user_keys %}
+          <li>
+            <a class="dropdown-item {% if key.pk == selected_key.pk %}active{% endif %}"
+               href="?key={{ key.pk }}">
+              {{ key.name }}
+              {% if key.tier %}
+                <span class="badge bg-secondary ms-1" style="font-size:.6rem;">{{ key.tier.name }}</span>
+              {% endif %}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-sm table-hover align-middle mb-0">
+        <thead class="table-dark">
+          <tr>
+            <th>Endpoint</th>
+            <th class="text-center" style="width:160px">Today</th>
+            <th class="text-center" style="width:160px">This month</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+            {% with ep=row.endpoint tel=row.limit %}
+            <tr>
+              <td>
+                <span class="badge
+                  {% if ep.method == 'GET' %}bg-primary
+                  {% elif ep.method == 'POST' %}bg-success
+                  {% elif ep.method == 'PUT' or ep.method == 'PATCH' %}bg-warning text-dark
+                  {% elif ep.method == 'DELETE' %}bg-danger
+                  {% else %}bg-secondary{% endif %}
+                  me-2" style="font-size:.65rem;">{{ ep.method }}</span>
+                <code class="small">{{ ep.path|clean_path }}</code>
+              </td>
+
+              {# Today column #}
+              <td class="text-center">
+                {% if tel and tel.period == 'day' %}
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="progress flex-grow-1" style="height:6px;">
+                      {% if tel.limit > 0 %}
+                        {% widthratio row.day_count tel.limit 100 as bar_pct %}
+                        <div class="progress-bar {% if bar_pct >= 90 %}bg-danger{% elif bar_pct >= 70 %}bg-warning{% else %}bg-success{% endif %}"
+                             style="width:{% if bar_pct > 100 %}100{% else %}{{ bar_pct }}{% endif %}%"></div>
+                      {% endif %}
+                    </div>
+                    <span class="text-muted small text-nowrap">{{ row.day_count|intcomma }} / {{ tel.limit|intcomma }}</span>
+                  </div>
+                {% elif row.day_count > 0 %}
+                  <span class="text-muted small">{{ row.day_count|intcomma }}</span>
+                {% else %}
+                  <span class="text-muted small">—</span>
+                {% endif %}
+              </td>
+
+              {# Month column #}
+              <td class="text-center">
+                {% if tel and tel.period == 'month' %}
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="progress flex-grow-1" style="height:6px;">
+                      {% if tel.limit > 0 %}
+                        {% widthratio row.month_count tel.limit 100 as bar_pct %}
+                        <div class="progress-bar {% if bar_pct >= 90 %}bg-danger{% elif bar_pct >= 70 %}bg-warning{% else %}bg-success{% endif %}"
+                             style="width:{% if bar_pct > 100 %}100{% else %}{{ bar_pct }}{% endif %}%"></div>
+                      {% endif %}
+                    </div>
+                    <span class="text-muted small text-nowrap">{{ row.month_count|intcomma }} / {{ tel.limit|intcomma }}</span>
+                  </div>
+                {% elif row.month_count > 0 %}
+                  <span class="text-muted small">{{ row.month_count|intcomma }}</span>
+                {% else %}
+                  <span class="text-muted small">—</span>
+                {% endif %}
+              </td>
+
+            </tr>
+            {% endwith %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

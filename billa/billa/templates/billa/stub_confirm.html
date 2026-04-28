@@ -1,0 +1,39 @@
+{% extends "reggi/base.html" %}
+{% load humanize %}
+
+{% block title %}Simulated Checkout{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="card border-warning">
+      <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+        <strong>Simulated checkout</strong>
+        <span class="badge bg-dark">STUB BACKEND</span>
+      </div>
+      <div class="card-body">
+        {% if pack %}
+          <p class="card-text">
+            This is a local stub — no payment is processed and no real money moves.
+            Confirming will issue <strong>{{ pack.name }}</strong>
+            (<strong>{{ pack.credits|intcomma }} requests</strong> for <strong>${{ pack.price }}</strong>)
+            exactly as a real purchase would.
+          </p>
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="pack_pk" value="{{ pack.pk }}">
+            <button type="submit" class="btn btn-warning">Confirm purchase</button>
+            <a href="{% url 'billa.pricing' %}" class="btn btn-link text-muted">Cancel</a>
+          </form>
+        {% else %}
+          <p class="card-text text-danger">No active credit pack found.</p>
+          <a href="{% url 'billa.pricing' %}" class="btn btn-link text-muted">Back to pricing</a>
+        {% endif %}
+      </div>
+      <div class="card-footer text-muted small">
+        To use real payments set <code>BILLER_PAYMENT_BACKEND</code> in your settings.
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

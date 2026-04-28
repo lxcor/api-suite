@@ -1,0 +1,50 @@
+{% load docca_tags %}
+{% with method=ep.method|lower %}
+<div class="card endpoint-card method-{{ method }} mb-3 shadow-sm" data-app="{{ ep.app_label }}">
+  <div class="card-body py-3">
+
+    <div class="d-flex align-items-center gap-2 mb-1 justify-content-between">
+      <div class="d-flex align-items-center gap-2">
+        {% if method == 'get' %}
+          <span class="badge bg-primary method-badge">GET</span>
+        {% elif method == 'post' %}
+          <span class="badge bg-success method-badge">POST</span>
+        {% elif method == 'put' %}
+          <span class="badge bg-warning text-dark method-badge">PUT</span>
+        {% elif method == 'patch' %}
+          <span class="badge bg-warning text-dark method-badge">PATCH</span>
+        {% elif method == 'delete' %}
+          <span class="badge bg-danger method-badge">DELETE</span>
+        {% else %}
+          <span class="badge bg-secondary method-badge">{{ ep.method }}</span>
+        {% endif %}
+        <code class="endpoint-path">{{ ep.path|clean_path }}</code>
+      </div>
+      <a href="{% url 'docca.endpoint_detail' ep.slug %}" class="text-decoration-none text-muted small">View →</a>
+    </div>
+
+    {% if ep.overview %}
+      <p class="mb-1 small">{{ ep.overview|truncatewords:30 }}</p>
+    {% elif ep.summary %}
+      <p class="mb-1 text-secondary small">{{ ep.summary }}</p>
+    {% endif %}
+
+    {% if ep.parameters.exists %}
+      <div class="mt-2 d-flex flex-wrap gap-1">
+        {% for param in ep.parameters.select_related %}
+          <span class="badge border small fw-normal" style="font-size:.72rem;"
+                title="{{ param.effective_description }}"
+                style="cursor:default;">
+            {% if param.required %}
+              <span class="text-danger me-1">*</span>
+            {% endif %}
+            <code>{{ param.name }}</code>
+            <span class="text-muted ms-1">{{ param.param_def.param_type }}</span>
+          </span>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endwith %}

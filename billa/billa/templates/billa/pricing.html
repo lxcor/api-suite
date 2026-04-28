@@ -1,0 +1,62 @@
+{% extends "reggi/base.html" %}
+{% load humanize %}
+
+{% block title %}Pricing{% endblock %}
+{% block meta_robots %}<meta name="robots" content="index, follow">{% endblock %}
+{% block meta_description %}<meta name="description" content="Choose an API access plan for {{ site_name }}. Start with 1,000 free requests, then upgrade for more capacity.">{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <h4 class="mb-4">API Access</h4>
+
+    <div class="card border-success mb-4">
+      <div class="card-header bg-success text-white">
+        <strong>Credit packs</strong>
+      </div>
+      <div class="card-body">
+        <p class="card-text">
+          Purchase a block of API request credits. Credits are issued as a new API token —
+          use it independently or merge it into an existing token without changing your code.
+        </p>
+        {% if request.user.is_authenticated %}
+          <form method="post" action="{% url 'billa.checkout' %}">
+            {% csrf_token %}
+            <input type="hidden" name="provider" value="stub">
+            <div class="mb-3">
+              <label for="pack_pk" class="form-label">Choose a pack</label>
+              <select name="pack_pk" id="pack_pk" class="form-select">
+                {% for pack in packs %}
+                  <option value="{{ pack.pk }}">{{ pack.name }} — {{ pack.credits|intcomma }} requests — ${{ pack.price }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <button type="submit" class="btn btn-success">Buy credit pack</button>
+          </form>
+          <p class="mt-2 mb-0 text-muted small">
+            By purchasing you agree to our <a href="{% url 'billa.terms' %}">Payment Terms</a>.
+          </p>
+        {% else %}
+          <a href="{% url 'reggi.login' %}?next=/pricing/" class="btn btn-success">Login to purchase</a>
+          <p class="mt-2 mb-0 text-muted small">
+            <a href="{% url 'billa.terms' %}">Payment Terms</a>
+          </p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <strong>Free tier</strong>
+      </div>
+      <div class="card-body">
+        <p class="card-text">Every new account receives <strong>{{ free_credits|intcomma }} free requests</strong> on signup. No credit card required.</p>
+      </div>
+    </div>
+
+    <div class="mt-4 text-muted small">
+      <p>Credits are non-expiring and non-refundable. Each authenticated API request consumes one credit from the active token's balance. When a balance is exhausted the API returns HTTP 402.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}
