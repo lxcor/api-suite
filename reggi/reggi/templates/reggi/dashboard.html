@@ -47,6 +47,7 @@
     </table>
   </div>
 {% else %}
-  <div class="text-muted">You have no active API keys. <a href="{% url 'billa.pricing' %}">Purchase a credit pack</a> to get started.</div>
+  {% url 'billa.pricing' as pricing_url %}
+  <div class="text-muted">You have no active API keys.{% if pricing_url %} <a href="{{ pricing_url }}">Purchase a credit pack</a> to get started.{% endif %}</div>
 {% endif %}
 {% endblock %}

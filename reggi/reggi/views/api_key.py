@@ -1,6 +1,7 @@
 """Views for API key creation and revocation."""
 
 from django.conf import settings
+from django.db import IntegrityError, transaction
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
@@ -37,14 +38,19 @@ class ApiKeyCreateView(View):
             if expiry_days is not None:
                 expires_at = timezone.now() + timezone.timedelta(days=expiry_days)
 
-        ApiKey.objects.create(
-            user=request.user,
-            name=form.cleaned_data['name'],
-            prefix=lookup_prefix,
-            key_hash=key_hash,
-            salt=salt_hex,
-            expires_at=expires_at,
-        )
+        try:
+            with transaction.atomic():
+                ApiKey.objects.create(
+                    user=request.user,
+                    name=form.cleaned_data['name'],
+                    prefix=lookup_prefix,
+                    key_hash=key_hash,
+                    salt=salt_hex,
+                    expires_at=expires_at,
+                )
+        except IntegrityError:
+            form.add_error('name', 'You already have a key with this name.')
+            return render(request, 'reggi/key_create.html', {'form': form})
 
         return render(request, 'reggi/key_created.html', {'raw_key': raw_key})
 

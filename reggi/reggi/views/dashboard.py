@@ -19,5 +19,5 @@ class DashboardView(View):
         keys = ApiKey.objects.filter(
             user=request.user,
             revoked_at__isnull=True,
-        ).select_related('credit_balance__purchase')
+        )
         return render(request, 'reggi/dashboard.html', {'keys': keys})
