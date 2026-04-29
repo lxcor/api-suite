@@ -6,7 +6,7 @@
 A suite of reusable Django apps for building commercial-grade APIs.
 
 Each app is independently installable from PyPI and designed to work together.
-See [calendula.lxcor.com](https://calendula.lxcor.com) for a live reference implementation.
+See [api.calendula.lxcor.com](https://api.calendula.lxcor.com) for a live reference implementation.
 
 ## Apps
 
