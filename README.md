@@ -1,6 +1,8 @@
 # api-suite
 
-[![Latest on Django Packages](https://img.shields.io/badge/PyPI-lxcor-api-suite-8c3c26.svg)](https://djangopackages.org/packages/p/lxcor-api-suite/)
+[![Latest on Django Packages](https://img.shields.io/badge/PyPI-{{ package.slug
+}}-tags-8c3c26.svg)](https://djangopackages.org/packages/p/lxcor-api-suite/)
+
 
 A suite of reusable Django apps for building commercial-grade APIs.
 
