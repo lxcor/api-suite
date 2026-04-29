@@ -1,9 +1,11 @@
 # api-suite
 
+[![Latest on Django Packages](https://img.shields.io/badge/PyPI-lxcor-api-suite-8c3c26.svg)](https://djangopackages.org/packages/p/lxcor-api-suite/)
+
 A suite of reusable Django apps for building commercial-grade APIs.
 
 Each app is independently installable from PyPI and designed to work together.
-See [lxcor/calendula](https://github.com/lxcor/calendula) for a full reference implementation.
+See [calendula.lxcor.com](https://calendula.lxcor.com) for a live reference implementation.
 
 ## Apps
 
