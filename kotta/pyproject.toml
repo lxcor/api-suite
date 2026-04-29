@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lxcor-kotta"
-version = "0.1.0"
+version = "0.1.1"
 description = "Throttling and quota enforcement for Django REST Framework — per-endpoint rate limits, tier-based quotas, and usage tracking."
 readme = "README.md"
 license = { text = "MIT" }
@@ -35,6 +35,9 @@ Repository = "https://github.com/lxcor/api-suite"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["kotta*"]
+
+[tool.setuptools.package-data]
+"kotta" = ["templates/**/*.html"]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "settings_test"

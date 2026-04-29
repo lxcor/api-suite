@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lxcor-billa"
-version = "0.1.0"
+version = "0.1.1"
 description = "Credit-based billing for Django APIs — pluggable payment backends (Stripe, PayPal, stub), credit pack catalogue, and per-key balance tracking."
 readme = "README.md"
 license = { text = "MIT" }
@@ -41,6 +41,9 @@ Repository = "https://github.com/lxcor/api-suite"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["billa*"]
+
+[tool.setuptools.package-data]
+"billa" = ["templates/**/*.html"]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "settings_test"

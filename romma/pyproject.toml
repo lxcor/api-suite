@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lxcor-romma"
-version = "0.1.0"
+version = "0.1.1"
 description = "Hero landing page and endpoint catalog for Django APIs — wires docca's manifest into a ready-made portal with opt-in navbar fragments from billa and reggi."
 readme = "README.md"
 license = { text = "MIT" }
@@ -38,6 +38,9 @@ Repository = "https://github.com/lxcor/api-suite"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["romma*"]
+
+[tool.setuptools.package-data]
+"romma" = ["templates/**/*.html"]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "settings_test"
