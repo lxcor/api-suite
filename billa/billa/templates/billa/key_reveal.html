@@ -1,0 +1,39 @@
+{% extends "reggi/base.html" %}
+
+{% block title %}Your API Key{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-7">
+    <div class="card border-success shadow-sm">
+      <div class="card-body p-4">
+        <h4 class="card-title mb-1">Your new API key</h4>
+        <p class="text-danger fw-semibold mb-3">
+          Copy this key now — it will not be shown again.
+        </p>
+
+        <div class="input-group mb-4">
+          <input type="text" id="api-key-value" class="form-control font-monospace"
+                 value="{{ raw_key }}" readonly>
+          <button class="btn btn-outline-secondary" type="button" id="copy-btn">Copy</button>
+        </div>
+
+        <a href="{% url 'reggi.dashboard' %}" class="btn btn-primary">Go to dashboard</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.getElementById('copy-btn').addEventListener('click', function () {
+    var input = document.getElementById('api-key-value');
+    input.select();
+    input.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(input.value).then(function () {
+      document.getElementById('copy-btn').textContent = 'Copied!';
+    });
+  });
+</script>
+{% endblock %}

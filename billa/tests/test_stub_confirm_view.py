@@ -46,10 +46,15 @@ class StubConfirmViewTests(TestCase):
         self.client.post(f'/billing/stub/confirm/', {'pack_pk': self.pack.pk})
         self.assertEqual(Purchase.objects.filter(user=self.user, provider='stub').count(), 1)
 
-    def test_post_redirects_to_dashboard(self):
+    def test_post_redirects_to_key_reveal(self):
         self.client.force_login(self.user)
         response = self.client.post('/billing/stub/confirm/', {'pack_pk': self.pack.pk})
-        self.assertRedirects(response, '/reggi/keys/', fetch_redirect_response=False)
+        self.assertRedirects(response, '/billing/key/', fetch_redirect_response=False)
+
+    def test_post_stores_raw_key_in_session(self):
+        self.client.force_login(self.user)
+        self.client.post('/billing/stub/confirm/', {'pack_pk': self.pack.pk})
+        self.assertIn('billa_new_raw_key', self.client.session)
 
     def test_unauthenticated_post_redirects(self):
         response = self.client.post('/billing/stub/confirm/', {'pack_pk': self.pack.pk})

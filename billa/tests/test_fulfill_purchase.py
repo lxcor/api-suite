@@ -49,6 +49,17 @@ class FulfillPurchaseTests(TestCase):
         self.assertTrue(balances[0].is_default)
         self.assertFalse(balances[1].is_default)
 
+    def test_returns_raw_key(self):
+        raw_key = fulfill_purchase(self.user, 'stub', 'sess_1', self.pack)
+        self.assertIsNotNone(raw_key)
+        self.assertIsInstance(raw_key, str)
+        self.assertGreater(len(raw_key), 8)
+
+    def test_idempotent_returns_none(self):
+        fulfill_purchase(self.user, 'stub', 'sess_1', self.pack)
+        result = fulfill_purchase(self.user, 'stub', 'sess_1', self.pack)
+        self.assertIsNone(result)
+
     def test_idempotent_on_duplicate_session_id(self):
         fulfill_purchase(self.user, 'stub', 'sess_1', self.pack)
         fulfill_purchase(self.user, 'stub', 'sess_1', self.pack)

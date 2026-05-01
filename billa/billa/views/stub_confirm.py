@@ -29,5 +29,7 @@ class StubConfirmView(View):
         if pack is None:
             pack = CreditPack.objects.filter(is_active=True).first()
         session_id = f'stub_{uuid.uuid4().hex}'
-        fulfill_purchase(request.user, 'stub', session_id, credit_pack=pack)
-        return redirect(reverse('reggi.dashboard'))
+        raw_key = fulfill_purchase(request.user, 'stub', session_id, credit_pack=pack)
+        if raw_key:
+            request.session['billa_new_raw_key'] = raw_key
+        return redirect(reverse('billa.key_reveal'))

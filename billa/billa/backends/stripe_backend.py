@@ -1,8 +1,10 @@
 import stripe
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.http import HttpResponse
 from django.shortcuts import redirect
+from django.urls import reverse
 
 from billa.services import fulfill_purchase
 
@@ -19,10 +21,7 @@ class StripePaymentBackend:
     def create_checkout(self, request, credit_pack=None):
         stripe.api_key = _stripe_setting('SECRET_KEY')
         currency = getattr(settings, 'BILLER_CURRENCY', 'USD')
-        success_url = getattr(
-            settings, 'BILLER_SUCCESS_URL',
-            request.build_absolute_uri('/reggi/keys/'),
-        )
+        success_url = request.build_absolute_uri(reverse('billa.key_reveal'))
         cancel_url = getattr(
             settings, 'BILLER_CANCEL_URL',
             request.build_absolute_uri('/pricing/'),
@@ -71,6 +70,8 @@ class StripePaymentBackend:
                 from billa.models import CreditPack
                 credit_pack = CreditPack.objects.filter(pk=pack_pk, is_active=True).first()
 
-            fulfill_purchase(user, 'stripe', session['id'], credit_pack=credit_pack)
+            raw_key = fulfill_purchase(user, 'stripe', session['id'], credit_pack=credit_pack)
+            if raw_key:
+                cache.set(f'billa_new_key_{user.pk}', raw_key, 300)
 
         return HttpResponse(status=200)

@@ -145,4 +145,4 @@ class PayPalPaymentBackend:
         if pack_pk:
             credit_pack = CreditPack.objects.filter(pk=pack_pk, is_active=True).first()
 
-        fulfill_purchase(user, 'paypal', capture_id, credit_pack=credit_pack)
+        return fulfill_purchase(user, 'paypal', capture_id, credit_pack=credit_pack)

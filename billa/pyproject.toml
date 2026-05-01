@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lxcor-billa"
-version = "0.1.1"
+version = "0.1.2"
 description = "Credit-based billing for Django APIs — pluggable payment backends (Stripe, PayPal, stub), credit pack catalogue, and per-key balance tracking."
 readme = "README.md"
 license = { text = "MIT" }

@@ -3,6 +3,7 @@
 from django.urls import path
 
 from billa.views.checkout import CheckoutView
+from billa.views.key_reveal import PurchaseKeyRevealView
 from billa.views.token_usage import TokenUsageView
 from billa.views.merge import MergeView
 from billa.views.paypal_return import PayPalReturnView
@@ -17,6 +18,7 @@ urlpatterns = [
     path('pricing/', PricingView.as_view(), name='billa.pricing'),
     path('terms/', TermsView.as_view(), name='billa.terms'),
     path('billing/checkout/', CheckoutView.as_view(), name='billa.checkout'),
+    path('billing/key/', PurchaseKeyRevealView.as_view(), name='billa.key_reveal'),
     path('billing/stub/confirm/', StubConfirmView.as_view(), name='billa.stub_confirm'),
     path('billing/return/paypal/', PayPalReturnView.as_view(), name='billa.paypal_return'),
     path('billing/merge/<int:source_pk>/', MergeView.as_view(), name='billa.merge'),

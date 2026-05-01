@@ -3,6 +3,7 @@
 import requests
 from django.conf import settings
 from django.shortcuts import redirect
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import View
 
@@ -51,6 +52,9 @@ class PayPalReturnView(View):
         except (KeyError, IndexError):
             return redirect(success_url)
 
-        PayPalPaymentBackend._fulfill_from_custom_id(custom_id, capture_id)
+        raw_key = PayPalPaymentBackend._fulfill_from_custom_id(custom_id, capture_id)
+        if raw_key:
+            request.session['billa_new_raw_key'] = raw_key
+            return redirect(reverse('billa.key_reveal'))
 
         return redirect(success_url)

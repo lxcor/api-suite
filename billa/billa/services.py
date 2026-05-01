@@ -15,7 +15,7 @@ def fulfill_purchase(user, provider, provider_session_id, credit_pack):
     from billa.models import CreditBalance, Purchase
 
     if Purchase.objects.filter(provider=provider, provider_session_id=provider_session_id).exists():
-        return
+        return None
 
     is_first_purchase = not Purchase.objects.filter(user=user).exists()
     pack_credits = credit_pack.credits
@@ -50,3 +50,5 @@ def fulfill_purchase(user, provider, provider_session_id, credit_pack):
     if credit_pack and credit_pack.tier:
         api_key.tier = credit_pack.tier
         api_key.save(update_fields=['tier'])
+
+    return raw_key
