@@ -198,10 +198,16 @@ def _check_and_increment(counter_kwargs, limit):
     window_start = counter_kwargs['window_start']
 
     with transaction.atomic():
-        counter, _ = UsageCounter.objects.select_for_update().get_or_create(
-            **counter_kwargs,
-            defaults={'count': 0},
-        )
+        try:
+            counter, _ = UsageCounter.objects.select_for_update().get_or_create(
+                **counter_kwargs,
+                defaults={'count': 0},
+            )
+        except UsageCounter.MultipleObjectsReturned:
+            # Deduplicate: keep the record with the highest count, delete the rest
+            qs = UsageCounter.objects.select_for_update().filter(**counter_kwargs).order_by('-count')
+            counter = qs.first()
+            qs.exclude(pk=counter.pk).delete()
 
         if counter.window_start < window_start:
             counter.count = 0
