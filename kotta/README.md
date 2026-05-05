@@ -60,8 +60,6 @@ python manage.py syncendpoints
 | Command | Description |
 |---|---|
 | `syncendpoints` | Register all URL patterns in the kotta endpoint table |
-| `dumpconfig` | Export tier and endpoint config to JSON |
-| `loadconfig` | Import tier and endpoint config from JSON |
 
 ## License
 

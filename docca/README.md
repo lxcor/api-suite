@@ -59,8 +59,6 @@ Visit `/docs/` to see the portal.
 | Command | Description |
 |---|---|
 | `syncdocs` | Discover and sync all DRF endpoints into the database |
-| `dumpdocs` | Export endpoint overviews to a JSON fixture |
-| `loaddocs` | Import endpoint overviews from a JSON fixture |
 
 ## License
 

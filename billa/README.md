@@ -62,13 +62,6 @@ urlpatterns = [
 {% include "billa/_footer_links.html" %}   {# Terms link #}
 ```
 
-## Management commands
-
-| Command | Description |
-|---|---|
-| `dumppacks` | Export credit pack catalogue to JSON |
-| `loadpacks` | Import credit pack catalogue from JSON |
-
 ## License
 
 MIT

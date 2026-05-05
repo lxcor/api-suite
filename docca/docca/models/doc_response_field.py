@@ -12,7 +12,7 @@ class DocResponseField(models.Model):
 
     ``syncdocs`` creates records automatically for endpoints that declare a
     ``ModelSerializer`` as their ``serializer_class``.  For all other
-    endpoints the records must be created via ``loaddocs``.
+    endpoints the records must be created via ``dumpsite``/``loadsite``.
 
     syncdocs-managed fields (refreshed on every sync):
         ``name``, ``data_type``, ``nullable``

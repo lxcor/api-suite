@@ -166,7 +166,7 @@ def _get_response_fields(cls):
 
     Only introspects when the serializer is a ModelSerializer subclass —
     plain Serializers and manually constructed dict responses are skipped
-    and return an empty list (manager fills these via loaddocs).
+    and return an empty list (manager fills these via dumpsite/loadsite).
     """
     serializer_cls = getattr(cls, 'serializer_class', None)
     if serializer_cls is None:
@@ -448,7 +448,7 @@ class Command(BaseCommand):
         for obj in created:
             self.stdout.write(self.style.SUCCESS('Created: %s %s' % (obj.method, _display_path(obj.path))))
 
-        # Endpoints with no response fields after sync need manual loaddocs work.
+        # Endpoints with no response fields after sync need manual work via dumpsite/loadsite.
         # This covers two silent cases: POST/PUT/PATCH endpoints (response fields
         # never attempted) and GET endpoints whose serializer_class is not a
         # ModelSerializer (discovery attempted but skipped).
@@ -466,7 +466,7 @@ class Command(BaseCommand):
             self.stdout.write(
                 self.style.WARNING(
                     '\n  %d endpoint(s) have no response fields (auto-discovery not possible).\n'
-                    '  Add them manually to the fixture and run loaddocs:' % len(no_fields)
+                    '  Add them manually to the fixture and run dumpsite/loadsite:' % len(no_fields)
                 )
             )
             for obj in sorted(no_fields, key=lambda o: (o.path, o.method)):
