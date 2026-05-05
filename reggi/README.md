@@ -38,6 +38,42 @@ urlpatterns = [
 | `REGGI_DOCS_URL` | `None` | URL shown as "Docs" link in the user navbar dropdown |
 | `REGGI_USAGE_URL` | `None` | URL shown as "Usage" link in the user navbar dropdown |
 
+## Authentication
+
+Once a user has registered and issued a key via the portal (`/reggi/keys/`), they include it on every API request.
+
+**Default style — Bearer token:**
+
+```
+Authorization: Bearer <api_key>
+```
+
+**Alternative style — custom header** (requires `REGGI_AUTH_HEADER_STYLE = 'apikey'` in settings):
+
+```
+X-Api-Key: <api_key>
+```
+
+**curl example (default):**
+
+```bash
+curl -H "Authorization: Bearer rwMHkjB-SZg9etmSsDSiZiwcYeK3eEt-keETFkg1" \
+     https://api.example.com/some/endpoint/
+```
+
+**Python requests example:**
+
+```python
+import requests
+
+headers = {"Authorization": "Bearer rwMHkjB-SZg9etmSsDSiZiwcYeK3eEt-keETFkg1"}
+response = requests.post("https://api.example.com/some/endpoint/", headers=headers, json={...})
+```
+
+Keys are shown only once at creation — store them securely. Revoke and reissue from the portal if a key is compromised.
+
+---
+
 ## Features
 
 - Registration with email verification
