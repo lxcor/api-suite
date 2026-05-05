@@ -25,8 +25,8 @@ kotta_fixtures = [
 
 billa_fixtures = [
     'billa.creditpack',
-    'billa.purchase',
     'billa.creditbalance',
+    'billa.purchase',
 ]
 
 fixtures = system_fixtures + docca_fixtures + reggi_fixtures + kotta_fixtures + billa_fixtures
