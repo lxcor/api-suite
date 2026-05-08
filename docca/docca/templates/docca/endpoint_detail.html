@@ -1,13 +1,13 @@
 {% extends "docca/base.html" %}
 {% load docca_tags %}
 
-{% block title %}{% if ep.summary %}{{ ep.summary }} — {% endif %}{{ ep.method }} {{ ep.path|clean_path }}{% endblock %}
-{% if ep.summary or ep.overview %}
-{% block meta_description %}<meta name="description" content="{{ ep.overview|default:ep.summary|truncatechars:160 }}">{% endblock %}
+{% block title %}{% if ep.title %}{{ ep.title }} — {% endif %}{{ ep.method }} {{ ep.path|clean_path }}{% endblock %}
+{% if ep.title or ep.description %}
+{% block meta_description %}<meta name="description" content="{{ ep.description|default:ep.title|truncatechars:160 }}">{% endblock %}
 {% block og_tags %}
 <meta property="og:type" content="article">
-<meta property="og:title" content="{% if ep.summary %}{{ ep.summary }} — {% endif %}{{ ep.method }} {{ ep.path|clean_path }}">
-<meta property="og:description" content="{{ ep.overview|default:ep.summary|truncatechars:160 }}">
+<meta property="og:title" content="{% if ep.title %}{{ ep.title }} — {% endif %}{{ ep.method }} {{ ep.path|clean_path }}">
+<meta property="og:description" content="{{ ep.description|default:ep.title|truncatechars:160 }}">
 <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
 {% endblock %}
 {% endif %}
@@ -57,10 +57,12 @@
       <code class="fs-5">{{ ep.path|clean_path }}</code>
     </div>
 
-    {% if ep.overview %}
-      <h1 class="h5 fw-normal my-2">{{ ep.overview|first_sentence }}</h1>
-    {% elif ep.summary %}
-      <h1 class="h5 fw-normal my-2">{{ ep.summary }}</h1>
+    {% if ep.subtitle %}
+      <h1 class="h5 fw-normal my-2">{{ ep.subtitle }}</h1>
+    {% elif ep.description %}
+      <h1 class="h5 fw-normal my-2">{{ ep.description|first_sentence }}</h1>
+    {% elif ep.title %}
+      <h1 class="h5 fw-normal my-2">{{ ep.title }}</h1>
     {% endif %}
 
     <div class="d-flex align-items-center gap-2 mb-3" style="min-height:1.75rem;">
@@ -72,22 +74,19 @@
 
     {# Section anchor nav #}
     <div class="d-flex flex-wrap gap-3 mt-3 mb-1">
-      {% if ep.overview %}
+      {% if ep.description %}
         <a href="#section-overview" class="text-decoration-none text-secondary small">Overview</a>
       {% endif %}
       <a href="#section-parameters" class="text-decoration-none text-secondary small">Parameters</a>
       {% if ep.response_fields.exists %}
         <a href="#section-response" class="text-decoration-none text-secondary small">Response</a>
       {% endif %}
-      {% if ep.description %}
-        <a href="#section-notes" class="text-decoration-none text-secondary small">Technical notes</a>
-      {% endif %}
     </div>
 
-    {% if ep.overview %}
+    {% if ep.description %}
       <hr>
       <h2 id="section-overview" class="text-muted text-uppercase small fw-semibold mb-2">Overview</h2>
-      <p style="white-space: pre-line;">{{ ep.overview|codify_params }}</p>
+      <p style="white-space: pre-line;">{{ ep.description|codify_params }}</p>
     {% endif %}
 
     {# Parameters #}
@@ -162,12 +161,6 @@
       </table>
     {% endif %}
 
-    {# Technical notes — implementation detail, shown last #}
-    {% if ep.description %}
-      <hr>
-      <h2 id="section-notes" class="text-muted text-uppercase small fw-semibold mb-2">Technical notes</h2>
-      <p class="text-muted small mb-0" style="white-space: pre-line;">{{ ep.description|codify_params }}</p>
-    {% endif %}
 
   </div>
 </div>

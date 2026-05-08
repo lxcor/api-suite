@@ -62,9 +62,8 @@ RESPONSE_TYPE_MAP = {
 }
 
 PATH_PARAM_RE = re.compile(r'\(\?P<(\w+)>[^)]+\)')
-
-
 _NAMED_GROUP_RE = re.compile(r'\(\?P<(\w+)>[^)]+\)')
+_DOC_TAG_RE = re.compile(r'^@(title|subtitle|description):\s*', re.MULTILINE)
 
 
 def _clean_path(raw):
@@ -72,11 +71,7 @@ def _clean_path(raw):
 
 
 def _display_path(path):
-    """Convert Django URL regex groups to human-readable {resource_id} tokens.
-
-    ``(?P<pk>[^/.]+)`` uses the preceding segment to infer the resource name
-    (e.g. ``timezone/{timezone_id}/``).  Other named groups map to ``{name}``.
-    """
+    """Convert Django URL regex groups to human-readable {resource_id} tokens."""
     def _replace(m):
         group_name = m.group(1)
         if group_name == 'pk':
@@ -88,30 +83,64 @@ def _display_path(path):
     return _NAMED_GROUP_RE.sub(_replace, path)
 
 
-def _first_line(text):
-    if not text:
-        return ''
-    for line in text.strip().splitlines():
-        line = line.strip()
-        if line:
-            return line
-    return ''
+def _parse_docstring(doc, docca_overview=''):
+    """Parse a structured docstring into title, subtitle, description.
+
+    Supports explicit tags anywhere in the docstring::
+
+        Continents
+
+        @subtitle: List all continents with name, slug, and two-letter code.
+        @description: Returns the full list of all seven continents in the
+        database. Each record includes the name, slug, and two-letter code.
+
+    Rules:
+    - ``@title:``       — overrides the card title (otherwise: first non-empty line).
+    - ``@subtitle:``    — one-liner shown on the catalog card.
+    - ``@description:`` — full product-facing text; never overwritten by syncdocs.
+                          Falls back to the ``docca_overview`` class attribute.
+    Multi-line values are supported: content runs until the next ``@tag:`` or end.
+    """
+    if not doc:
+        return {'title': '', 'subtitle': '', 'description': docca_overview}
+
+    doc = doc.strip()
+    tags = {}
+
+    for m in _DOC_TAG_RE.finditer(doc):
+        key = m.group(1)
+        start = m.end()
+        next_m = _DOC_TAG_RE.search(doc, start)
+        end = next_m.start() if next_m else len(doc)
+        tags[key] = doc[start:end].strip()
+
+    first_tag = _DOC_TAG_RE.search(doc)
+    preamble = doc[:first_tag.start()].strip() if first_tag else doc
+
+    if 'title' in tags:
+        title = tags['title']
+    else:
+        lines = [ln.strip() for ln in preamble.splitlines() if ln.strip()]
+        title = lines[0] if lines else ''
+
+    subtitle = tags.get('subtitle', '')
+    description = tags.get('description', docca_overview)
+
+    return {'title': title, 'subtitle': subtitle, 'description': description}
 
 
-def _get_docca_meta(cls):
-    """Read docca_tag and docca_overview class attributes if present."""
-    return {
-        'tag_name': getattr(cls, 'docca_tag', None),
-        'overview': getattr(cls, 'docca_overview', ''),
-    }
-
-
-def _get_docstring(cls, method_name):
+def _get_doc_fields(cls, method_name):
+    """Extract title, subtitle, description from a view class or method docstring."""
     handler = getattr(cls, method_name, None)
     doc = inspect.getdoc(handler) if handler else None
     if not doc:
         doc = inspect.getdoc(cls) or ''
-    return _first_line(doc), doc
+    docca_overview = getattr(cls, 'docca_overview', '')
+    return _parse_docstring(doc, docca_overview)
+
+
+def _get_docca_tag(cls):
+    return getattr(cls, 'docca_tag', None)
 
 
 def _get_app_label(cls):
@@ -162,12 +191,7 @@ def _get_path_params(path):
 
 
 def _get_response_fields(cls):
-    """Return response field descriptors from a ModelSerializer serializer_class.
-
-    Only introspects when the serializer is a ModelSerializer subclass —
-    plain Serializers and manually constructed dict responses are skipped
-    and return an empty list (manager fills these via dumpsite/loadsite).
-    """
+    """Return response field descriptors from a ModelSerializer serializer_class."""
     serializer_cls = getattr(cls, 'serializer_class', None)
     if serializer_cls is None:
         return []
@@ -195,11 +219,7 @@ def _get_response_fields(cls):
 
 
 def _sync_response_fields(endpoint, fields):
-    """Upsert DocResponseField records for an endpoint.
-
-    Creates missing records.  Refreshes ``data_type`` and ``nullable``
-    on existing records.  Never touches ``description`` or ``example``.
-    """
+    """Upsert DocResponseField records for an endpoint."""
     for f in fields:
         obj, created = DocResponseField.objects.get_or_create(
             endpoint=endpoint,
@@ -246,34 +266,33 @@ def _collect_endpoints(patterns, prefix=''):
 
         path_params = _get_path_params(clean)
         actions = getattr(cb, 'actions', None)
-        meta = _get_docca_meta(cls)
+        tag_name = _get_docca_tag(cls)
 
         if actions:
             for http_method, action_name in actions.items():
-                summary, description = _get_docstring(cls, action_name)
+                doc_fields = _get_doc_fields(cls, action_name)
                 if path_params:
                     params = path_params
                 else:
                     params = _get_serializer_params(cls) if http_method in ('post', 'put', 'patch') else []
-                # Response fields only meaningful on GET endpoints
                 response_fields = _get_response_fields(cls) if http_method == 'get' else []
                 yield {
                     'path': clean,
                     'method': http_method.upper(),
                     'view_name': p.name or '',
                     'app_label': _get_app_label(cls),
-                    'summary': summary,
-                    'description': description,
+                    'title': doc_fields['title'],
+                    'subtitle': doc_fields['subtitle'],
+                    'description': doc_fields['description'],
                     'params': params,
                     'response_fields': response_fields,
-                    'tag_name': meta['tag_name'],
-                    'overview': meta['overview'],
+                    'tag_name': tag_name,
                 }
         else:
             for http_method in HTTP_METHODS:
                 if not hasattr(cls, http_method):
                     continue
-                summary, description = _get_docstring(cls, http_method)
+                doc_fields = _get_doc_fields(cls, http_method)
                 if path_params:
                     params = path_params
                 else:
@@ -284,29 +303,22 @@ def _collect_endpoints(patterns, prefix=''):
                     'method': http_method.upper(),
                     'view_name': p.name or '',
                     'app_label': _get_app_label(cls),
-                    'summary': summary,
-                    'description': description,
+                    'title': doc_fields['title'],
+                    'subtitle': doc_fields['subtitle'],
+                    'description': doc_fields['description'],
                     'params': params,
                     'response_fields': response_fields,
-                    'tag_name': meta['tag_name'],
-                    'overview': meta['overview'],
+                    'tag_name': tag_name,
                 }
 
 
 def _sync_parameters(endpoint, params):
-    """Upsert DocParameter records for an endpoint.
-
-    - Creates DocParameterDef if the name is new (blank description shell).
-    - Creates DocParameter link if it doesn't exist.
-    - Refreshes ``required`` and ``location`` on existing links.
-    - Never touches ``description_override`` or ``example``.
-    """
+    """Upsert DocParameter records for an endpoint."""
     for p in params:
         param_def, _ = DocParameterDef.objects.get_or_create(
             name=p['name'],
             defaults={'param_type': p['param_type']},
         )
-        # Refresh param_type if we have a more specific type from code
         if param_def.param_type == 'string' and p['param_type'] != 'string':
             param_def.param_type = p['param_type']
             param_def.save(update_fields=['param_type'])
@@ -332,6 +344,18 @@ class Command(BaseCommand):
         python manage.py syncdocs astra
         python manage.py syncdocs locci astra
         python manage.py syncdocs --all
+
+    Structured docstring format (title, subtitle, description are authoritative)::
+
+        class MyViewSet(ViewSet):
+            \"\"\"Continents
+
+            @subtitle: List all continents with name, slug, and two-letter code.
+            @description: Returns the full list of all seven continents.
+            \"\"\"
+
+    syncdocs overwrites ``title`` and ``subtitle`` on every run.
+    ``description`` is only set on first creation — never overwritten.
     """
 
     help = 'Sync DocEndpoint and DocParameter records from the project URL configuration.'
@@ -387,10 +411,10 @@ class Command(BaseCommand):
                     'slug': make_endpoint_slug(ep['path'], ep['method']),
                     'view_name': ep['view_name'],
                     'app_label': ep['app_label'],
-                    'summary': ep['summary'],
+                    'title': ep['title'],
+                    'subtitle': ep['subtitle'],
                     'description': ep['description'],
                     'tag': tag,
-                    'overview': ep['overview'],
                 },
             )
             if was_created:
@@ -407,12 +431,13 @@ class Command(BaseCommand):
                 if obj.app_label != ep['app_label']:
                     obj.app_label = ep['app_label']
                     update_fields.append('app_label')
-                if obj.summary != ep['summary']:
-                    obj.summary = ep['summary']
-                    update_fields.append('summary')
-                if obj.description != ep['description']:
-                    obj.description = ep['description']
-                    update_fields.append('description')
+                if obj.title != ep['title']:
+                    obj.title = ep['title']
+                    update_fields.append('title')
+                if obj.subtitle != ep['subtitle']:
+                    obj.subtitle = ep['subtitle']
+                    update_fields.append('subtitle')
+                # description is never overwritten — set once at creation
                 if update_fields:
                     obj.save(update_fields=update_fields)
 
@@ -448,10 +473,6 @@ class Command(BaseCommand):
         for obj in created:
             self.stdout.write(self.style.SUCCESS('Created: %s %s' % (obj.method, _display_path(obj.path))))
 
-        # Endpoints with no response fields after sync need manual work via dumpsite/loadsite.
-        # This covers two silent cases: POST/PUT/PATCH endpoints (response fields
-        # never attempted) and GET endpoints whose serializer_class is not a
-        # ModelSerializer (discovery attempted but skipped).
         no_fields = [
             obj for obj in (created + existing)
             if not DocResponseField.objects.filter(endpoint=obj).exists()
@@ -466,7 +487,7 @@ class Command(BaseCommand):
             self.stdout.write(
                 self.style.WARNING(
                     '\n  %d endpoint(s) have no response fields (auto-discovery not possible).\n'
-                    '  Add them manually to the fixture and run dumpsite/loadsite:' % len(no_fields)
+                    '  Add them manually to the fixture and run loaddocs:' % len(no_fields)
                 )
             )
             for obj in sorted(no_fields, key=lambda o: (o.path, o.method)):

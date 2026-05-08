@@ -23,10 +23,10 @@
       <a href="{% url 'docca.endpoint_detail' ep.slug %}" class="text-decoration-none text-muted small">View →</a>
     </div>
 
-    {% if ep.overview %}
-      <p class="mb-1 small">{{ ep.overview|truncatewords:30 }}</p>
-    {% elif ep.summary %}
-      <p class="mb-1 text-secondary small">{{ ep.summary }}</p>
+    {% if ep.subtitle %}
+      <p class="mb-1 small">{{ ep.subtitle }}</p>
+    {% elif ep.description %}
+      <p class="mb-1 small">{{ ep.description|truncatewords:30 }}</p>
     {% endif %}
 
     {% if ep.parameters.exists %}

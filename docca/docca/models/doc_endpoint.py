@@ -55,20 +55,21 @@ class DocEndpoint(models.Model):
         max_length=100,
         help_text='Django app this endpoint belongs to (e.g. astra, locci).',
     )
-    summary = models.CharField(
+    title = models.CharField(
         max_length=500,
         blank=True,
-        help_text='First line of the view docstring. Auto-populated by syncdocs.',
+        help_text='Short card title. Auto-populated from the first docstring line or @title: tag.',
+    )
+    subtitle = models.CharField(
+        max_length=500,
+        blank=True,
+        help_text='One-liner shown on the catalog card. Populated from @subtitle: tag.',
     )
     description = models.TextField(
         blank=True,
-        help_text='Full docstring text. Auto-populated by syncdocs, editable by managers.',
-    )
-    overview = models.TextField(
-        blank=True,
-        help_text='Product-facing description written by managers. '
-                  'Never overwritten by syncdocs. '
-                  'Shown prominently in the portal.',
+        help_text='Full product-facing description shown on the detail page. '
+                  'Populated from @description: tag or docca_overview attribute. '
+                  'Never overwritten by syncdocs.',
     )
     tag = models.ForeignKey(
         'docca.DocTag',

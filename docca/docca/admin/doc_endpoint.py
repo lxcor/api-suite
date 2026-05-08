@@ -24,12 +24,11 @@ class DocResponseFieldInline(admin.TabularInline):
 class DocEndpointAdmin(admin.ModelAdmin):
     list_display = ['method', 'path', 'app_label', 'tag', 'published', 'is_orphan']
     list_filter = ['method', 'app_label', 'published', 'is_orphan', 'tag']
-    search_fields = ['path', 'view_name', 'summary']
+    search_fields = ['path', 'view_name', 'title']
     readonly_fields = ['path', 'method', 'view_name', 'app_label', 'is_orphan', 'created_at', 'updated_at']
     fields = [
         'path', 'method', 'view_name', 'app_label',
-        'overview',
-        'summary', 'description',
+        'title', 'subtitle', 'description',
         'tag', 'published', 'is_orphan',
         'created_at', 'updated_at',
     ]
