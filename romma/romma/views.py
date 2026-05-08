@@ -14,11 +14,11 @@ from docca.views import get_manifest_data
 # ---------------------------------------------------------------------------
 
 def _path_segments(display_path):
-    """Return non-param path segments as badge descriptors."""
+    """Return path segments as badge descriptors, marking path params."""
     return [
-        {'label': part}
+        {'label': part, 'is_param': part.startswith('{')}
         for part in display_path.split('/')
-        if part and not part.startswith('{')
+        if part
     ]
 
 
@@ -51,7 +51,7 @@ def _app_badge_class(app_label):
 def _enrich(ep):
     ep['path_segments'] = _path_segments(ep['display_path'])
     ep['app_badge_class'] = _app_badge_class(ep['app_label'])
-    ep['card_title'] = _card_title(ep['display_path'])
+    ep['card_title'] = ep.get('summary') or _card_title(ep['display_path'])
 
 
 # ---------------------------------------------------------------------------

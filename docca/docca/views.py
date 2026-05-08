@@ -154,6 +154,7 @@ def _endpoint_dict(ep):
         'display_path': _display_path(ep.path),
         'method': ep.method,
         'app_label': ep.app_label,
+        'summary': ep.summary,
         'subtitle': _first_sentence(ep.overview) or ep.summary,
         'detail_url': '/docs/endpoint/%s/' % ep.slug,  # noqa: keep literal, avoids reverse import cycle
     }
