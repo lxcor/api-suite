@@ -60,6 +60,11 @@ Visit `/docs/` to see the portal.
 |---|---|
 | `syncdocs` | Discover and sync all DRF endpoints into the database |
 
+> **Warning — `syncdocs` is authoritative for `summary` and `description`.**
+> Every run re-reads the view docstrings and overwrites those two fields in the database.
+> Edits made directly to the DB or to fixture files will be lost on the next `syncdocs` run.
+> To set a permanent custom summary, update the view or method docstring instead.
+
 ## License
 
 MIT
