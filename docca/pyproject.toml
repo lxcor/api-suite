@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lxcor-docca"
-version = "0.1.1"
+version = "0.1.2"
 description = "API documentation portal for Django REST Framework — auto-syncs endpoints, renders a searchable portal with tags, parameters, and response fields."
 readme = "README.md"
 license = { text = "MIT" }
