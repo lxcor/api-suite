@@ -328,9 +328,14 @@ class TierThrottle(BaseThrottle):
         except TierEndpointLimit.DoesNotExist:
             if not KOTTA_OPEN_BY_DEFAULT:
                 return False
-            # No limit configured — record usage without enforcing a cap
+            # No limit configured — record usage without enforcing a cap (both windows)
+            today = _get_window_start('day')
             _check_and_increment(
-                {**counter_kwargs, 'window_start': _get_window_start('month')},
+                {**counter_kwargs, 'window_start': today},
+                2_147_483_647,
+            )
+            _check_and_increment(
+                {**counter_kwargs, 'window_start': today.replace(day=1)},
                 2_147_483_647,
             )
             return True
@@ -342,6 +347,20 @@ class TierThrottle(BaseThrottle):
             {**counter_kwargs, 'window_start': window_start},
             limit_obj.limit,
         )
+
+        if allowed:
+            # Track the complementary window so the dashboard shows both day and month counts
+            today = _get_window_start('day')
+            if limit_obj.period == 'month':
+                _check_and_increment(
+                    {**counter_kwargs, 'window_start': today},
+                    2_147_483_647,
+                )
+            else:
+                _check_and_increment(
+                    {**counter_kwargs, 'window_start': today.replace(day=1)},
+                    2_147_483_647,
+                )
 
         if not allowed:
             request.kotta_throttle_info = {
