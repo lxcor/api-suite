@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-SESSION="web-sophia.lxcor.com"
+SESSION="sophia.lxcor.com"
 
 cd "$(dirname "$0")"
 
