@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'django.contrib.sitemaps',
     'rest_framework',
     'docca',
     'reggi',
@@ -108,6 +109,10 @@ TIME_ZONE = 'UTC'
 SESSION_COOKIE_NAME = 'sessionid_api'
 
 REGGI_SITE_NAME = os.environ.get('REGGI_SITE_NAME', 'API-Suite')
+
+# reggi is mounted at /reggi/ (see core/urls.py), which is where its login, e-mail links and
+# redirects default to. Django's own login_required (used by kotta's /usage/) needs this too.
+LOGIN_URL = '/reggi/login/'
 
 DOCCA_APP_DESCRIPTIONS = {
     'reggi': (
