@@ -120,7 +120,7 @@ URL layout:
 - `/pricing/`, `/billing/`, `/terms/` — billa (billing flows)
 - `/admin/` — Django admin
 
-Settings live in `sandbox/core/settings.py`. They load from `.env` at the repo root (see `.env.example`). SQLite is the default; set `DJANGO_DB_NAME` to switch to Postgres. `DJANGO_DEBUG=1` is all a fresh clone needs.
+Settings live in `sandbox/core/settings.py`. They load from `.env` at the repo root (see `.env.example`). The sandbox uses SQLite (`sandbox/db.sqlite3`, git-ignored). `DJANGO_DEBUG=1` is all a fresh clone needs.
 
 The `dumpsite`/`loadsite` and `syncdocs`/`syncendpoints` management commands all work from inside `sandbox/` because `tools` is in `INSTALLED_APPS`.
 
