@@ -35,15 +35,15 @@ def _card_title(display_path):
 
 
 def _app_badge_class(app_label):
-    """Return Bootstrap badge classes for an app label."""
+    """Return a CSS class for the app card-top colour band."""
+    known = {'billa', 'docca', 'kotta', 'reggi', 'romma'}
+    if app_label in known:
+        return 'app-color-%s' % app_label
+    # Fallback for unknown apps: Bootstrap palette keyed by hash
     palette = ['warning', 'danger', 'success', 'info']
     dark_bg = {'danger', 'success', 'info'}
-    color_map = getattr(settings, 'DOCCA_APP_COLORS', {})
-    if app_label in color_map:
-        color = color_map[app_label]
-    else:
-        digest = int(hashlib.md5(app_label.encode()).hexdigest(), 16)
-        color = palette[digest % len(palette)]
+    digest = int(hashlib.md5(app_label.encode()).hexdigest(), 16)
+    color = palette[digest % len(palette)]
     text = 'text-white' if color in dark_bg else 'text-dark'
     return 'bg-%s %s' % (color, text)
 
@@ -93,6 +93,17 @@ def home(request):
             app_data[label]['endpoint_count'] += 1
             if group['tag'] not in app_data[label]['tags']:
                 app_data[label]['tags'].append(group['tag'])
+
+    # Seed cards for apps that have a description but no manifest entries yet
+    for label, description in app_descriptions.items():
+        if label not in app_data:
+            app_data[label] = {
+                'app_label': label,
+                'badge_class': _app_badge_class(label),
+                'description': description,
+                'endpoint_count': 0,
+                'tags': [],
+            }
 
     apps = sorted(app_data.values(), key=lambda a: (a['app_label'] == 'romma', a['app_label']))
 

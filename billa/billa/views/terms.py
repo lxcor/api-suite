@@ -8,7 +8,7 @@ from django.views import View
 class TermsView(View):
     def get(self, request):
         context = {
-            'merchant_name': getattr(settings, 'BILLER_MERCHANT_NAME', settings.REGGI_SITE_NAME),
+            'merchant_name': getattr(settings, 'BILLER_MERCHANT_NAME', getattr(settings, 'REGGI_SITE_NAME', 'API')),
             'contact_email': getattr(settings, 'BILLER_CONTACT_EMAIL', ''),
             'upgrade_url': getattr(settings, 'BILLER_UPGRADE_URL', '/pricing/'),
         }

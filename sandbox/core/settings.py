@@ -118,6 +118,32 @@ TIME_ZONE = 'UTC'
 
 SESSION_COOKIE_NAME = 'sessionid_api'
 
+REGGI_SITE_NAME = os.environ.get('REGGI_SITE_NAME', 'API')
+
+DOCCA_APP_DESCRIPTIONS = {
+    'reggi': (
+        'API key authentication and account management. Issues and validates bearer tokens, '
+        'handles registration and login, and provides a self-service key dashboard.'
+    ),
+    'kotta': (
+        'Request metering and rate limiting. Enforces per-tier daily and monthly usage quotas '
+        'and exposes a usage dashboard so developers can track consumption in real time.'
+    ),
+    'billa': (
+        'Prepaid credit billing. Atomically deducts one credit per authenticated request, '
+        'integrates with Stripe and PayPal for one-time credit-pack purchases, and supports '
+        'credit merging across keys.'
+    ),
+    'docca': (
+        'Auto-generated API documentation. Syncs endpoint titles and descriptions from '
+        'view docstrings and publishes a browsable documentation portal at /docs/.'
+    ),
+    'romma': (
+        'Landing page and endpoint catalog. Pulls live data from the other apps to render '
+        'the hero page, endpoint browser, and navigation — no manual configuration needed.'
+    ),
+}
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'reggi.authentication.ApiKeyAuthentication',

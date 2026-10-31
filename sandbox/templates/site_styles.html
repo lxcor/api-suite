@@ -1,0 +1,89 @@
+<style>
+  /* ── Site-wide colour tokens ───────────────────────────────────────────── */
+  :root {
+    --brand-900: #0f172a;
+    --brand-800: #1a1a2e;
+    --brand-700: #16213e;
+    --brand-600: #0f3460;
+
+    --app-billa:  #059669;   /* emerald  — billing  */
+    --app-docca:  #2563eb;   /* blue     — docs     */
+    --app-kotta:  #d97706;   /* amber    — metering */
+    --app-reggi:  #7c3aed;   /* violet   — auth     */
+    --app-romma:  #db2777;   /* pink     — landing  */
+  }
+
+  /* ── App colour utility classes ────────────────────────────────────────── */
+  .app-color-billa { background: var(--app-billa); color: #fff; }
+  .app-color-docca { background: var(--app-docca); color: #fff; }
+  .app-color-kotta { background: var(--app-kotta); color: #fff; }
+  .app-color-reggi { background: var(--app-reggi); color: #fff; }
+  .app-color-romma { background: var(--app-romma); color: #fff; }
+
+  /* ── Shared navbar ──────────────────────────────────────────────────────── */
+  .site-navbar {
+    background: var(--brand-900);
+  }
+
+  /* ── Shared hero ────────────────────────────────────────────────────────── */
+  .site-hero {
+    background: linear-gradient(135deg,
+      var(--brand-800) 0%,
+      var(--brand-700) 60%,
+      var(--brand-600) 100%);
+    padding: 5rem 0 4rem;
+    color: #fff;
+  }
+  .site-hero .hero-title {
+    font-size: 3rem;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    line-height: 1.15;
+  }
+  .site-hero .hero-subtitle {
+    font-size: 1.2rem;
+    color: rgba(255,255,255,.7);
+    max-width: 560px;
+  }
+  .site-hero .hero-stat {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+  }
+  .site-hero .hero-stat-label {
+    font-size: .8rem;
+    color: rgba(255,255,255,.5);
+    text-transform: uppercase;
+    letter-spacing: .07em;
+  }
+
+  /* ── App cards ──────────────────────────────────────────────────────────── */
+  .app-card {
+    border: 1px solid #dee2e6;
+    border-radius: .75rem;
+    background: #fff;
+    transition: box-shadow .15s ease, transform .15s ease;
+    height: 100%;
+  }
+  .app-card:hover {
+    box-shadow: 0 .5rem 1.5rem rgba(0,0,0,.1);
+    transform: translateY(-2px);
+  }
+  .app-card .card-top {
+    border-radius: .75rem .75rem 0 0;
+    padding: 1.5rem;
+  }
+  .tag-pill {
+    font-size: .7rem;
+    padding: .2rem .55rem;
+    border-radius: 999px;
+  }
+  .section-label {
+    font-size: .7rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-weight: 600;
+    color: #6c757d;
+  }
+</style>

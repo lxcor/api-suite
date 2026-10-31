@@ -1,0 +1,168 @@
+{% load docca_tags %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ site_name }} — Framework Overview</title>
+  <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>body { background: #f8f9fa; }</style>
+  {% include "site_styles.html" %}
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark site-navbar">
+  <div class="container">
+    <span class="navbar-brand fw-semibold">{{ site_name }}</span>
+    <div class="navbar-nav ms-auto">
+      <a class="nav-link" href="/admin/">Admin</a>
+      {% try_include "billa/_navbar_links.html" %}
+      {% try_include "reggi/_navbar_user.html" %}
+    </div>
+  </div>
+</nav>
+
+<section class="site-hero">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-8">
+        <p class="text-uppercase fw-semibold mb-2" style="font-size:.75rem; letter-spacing:.1em; color:rgba(255,255,255,.5);">Django App Suite</p>
+        <h1 class="hero-title mb-3">{{ site_name }}</h1>
+        <p class="hero-subtitle mb-4">
+          Five independently-publishable Django apps for building commercial-grade APIs —
+          authentication, rate limiting, billing, documentation, and a landing page, wired together out of the box.
+        </p>
+        <div class="d-flex gap-3 flex-wrap">
+          <a href="/admin/" class="btn btn-light btn-lg fw-semibold px-4">Open Admin</a>
+          <a href="/account/" class="btn btn-outline-light btn-lg px-4">Account</a>
+        </div>
+      </div>
+      <div class="col-lg-3 offset-lg-1 d-none d-lg-flex flex-column gap-4">
+        <div>
+          <div class="hero-stat">5</div>
+          <div class="hero-stat-label">Apps</div>
+        </div>
+        <div>
+          <div class="hero-stat">PyPI</div>
+          <div class="hero-stat-label">Published as lxcor-*</div>
+        </div>
+        <div>
+          <div class="hero-stat">MIT</div>
+          <div class="hero-stat-label">License</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container py-5">
+  <p class="section-label mb-4">What's included</p>
+  <div class="row g-4">
+
+    <div class="col-md-6">
+      <div class="app-card">
+        <div class="card-top app-color-reggi" style="min-height:4rem;">
+          <span class="fs-5 fw-bold">Reggi</span>
+          <span class="ms-2 small opacity-75">lxcor-reggi</span>
+        </div>
+        <div class="p-4">
+          <p class="text-secondary mb-4" style="line-height:1.65;">
+            API key authentication and account management. Issues and validates bearer tokens,
+            handles registration and login, and provides a self-service key dashboard.
+          </p>
+          <div class="d-flex gap-2">
+            <a href="/account/" class="btn btn-sm btn-outline-secondary">Account →</a>
+            <a href="/admin/reggi/" class="btn btn-sm btn-outline-secondary">Admin →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="app-card">
+        <div class="card-top app-color-kotta" style="min-height:4rem;">
+          <span class="fs-5 fw-bold">Kotta</span>
+          <span class="ms-2 small opacity-75">lxcor-kotta</span>
+        </div>
+        <div class="p-4">
+          <p class="text-secondary mb-4" style="line-height:1.65;">
+            Request metering and rate limiting. Enforces per-tier daily and monthly usage quotas
+            and exposes a usage dashboard so developers can track consumption in real time.
+          </p>
+          <div class="d-flex gap-2">
+            <a href="/usage/" class="btn btn-sm btn-outline-secondary">Usage →</a>
+            <a href="/admin/kotta/" class="btn btn-sm btn-outline-secondary">Admin →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="app-card">
+        <div class="card-top app-color-billa" style="min-height:4rem;">
+          <span class="fs-5 fw-bold">Billa</span>
+          <span class="ms-2 small opacity-75">lxcor-billa</span>
+        </div>
+        <div class="p-4">
+          <p class="text-secondary mb-4" style="line-height:1.65;">
+            Prepaid credit billing. Atomically deducts one credit per authenticated request,
+            integrates with Stripe and PayPal for one-time credit-pack purchases, and supports
+            credit merging across keys.
+          </p>
+          <div class="d-flex gap-2">
+            <a href="/pricing/" class="btn btn-sm btn-outline-secondary">Pricing →</a>
+            <a href="/admin/billa/" class="btn btn-sm btn-outline-secondary">Admin →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="app-card">
+        <div class="card-top app-color-docca" style="min-height:4rem;">
+          <span class="fs-5 fw-bold">Docca</span>
+          <span class="ms-2 small opacity-75">lxcor-docca</span>
+        </div>
+        <div class="p-4">
+          <p class="text-secondary mb-4" style="line-height:1.65;">
+            Auto-generated API documentation. Syncs endpoint titles and descriptions from
+            view docstrings and publishes a browsable documentation portal at /docs/.
+          </p>
+          <div class="d-flex gap-2">
+            <a href="/docs/" class="btn btn-sm btn-outline-secondary">Docs →</a>
+            <a href="/admin/docca/" class="btn btn-sm btn-outline-secondary">Admin →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="app-card">
+        <div class="card-top app-color-romma" style="min-height:4rem;">
+          <span class="fs-5 fw-bold">Romma</span>
+          <span class="ms-2 small opacity-75">lxcor-romma</span>
+        </div>
+        <div class="p-4">
+          <p class="text-secondary mb-4" style="line-height:1.65;">
+            Landing page and endpoint catalog. Pulls live data from the other apps to render
+            the hero page, endpoint browser, and navigation — no manual configuration needed.
+          </p>
+          <div class="d-flex gap-2">
+            <a href="/endpoints/" class="btn btn-sm btn-outline-secondary">Endpoints →</a>
+            <a href="/admin/docca/" class="btn btn-sm btn-outline-secondary">Admin →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer class="border-top mt-5 py-3 text-center text-muted small">
+  {% try_include "billa/_footer_links.html" %}
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
