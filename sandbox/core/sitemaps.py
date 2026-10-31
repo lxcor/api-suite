@@ -8,7 +8,7 @@ class SuiteSitemap(Sitemap):
     priority = 0.6
 
     def items(self):
-        return ['romma.index', 'romma.endpoints', 'docca.portal', 'billa.pricing', 'billa.terms',
+        return ['home', 'romma.index', 'romma.endpoints', 'docca.portal', 'billa.pricing', 'billa.terms',
                 'reggi.register', 'reggi.login']
 
     def location(self, item):

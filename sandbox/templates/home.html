@@ -35,7 +35,7 @@
         </p>
         <div class="d-flex gap-3 flex-wrap">
           <a href="/admin/" class="btn btn-light btn-lg fw-semibold px-4">Open Admin</a>
-          <a href="/reggi/keys/" class="btn btn-outline-light btn-lg px-4">Account</a>
+          <a href="{% url 'reggi.dashboard' %}" class="btn btn-outline-light btn-lg px-4">Account</a>
         </div>
       </div>
       <div class="col-lg-3 offset-lg-1 d-none d-lg-flex flex-column gap-4">
@@ -72,7 +72,7 @@
             handles registration and login, and provides a self-service key dashboard.
           </p>
           <div class="d-flex gap-2">
-            <a href="/reggi/keys/" class="btn btn-sm btn-outline-secondary">Account →</a>
+            <a href="{% url 'reggi.dashboard' %}" class="btn btn-sm btn-outline-secondary">Account →</a>
             <a href="/admin/reggi/" class="btn btn-sm btn-outline-secondary">Admin →</a>
           </div>
         </div>
@@ -91,7 +91,7 @@
             and exposes a usage dashboard so developers can track consumption in real time.
           </p>
           <div class="d-flex gap-2">
-            <a href="/usage/" class="btn btn-sm btn-outline-secondary">Usage →</a>
+            <a href="{% url 'kotta.usage' %}" class="btn btn-sm btn-outline-secondary">Usage →</a>
             <a href="/admin/kotta/" class="btn btn-sm btn-outline-secondary">Admin →</a>
           </div>
         </div>
@@ -111,7 +111,7 @@
             credit merging across keys.
           </p>
           <div class="d-flex gap-2">
-            <a href="/pricing/" class="btn btn-sm btn-outline-secondary">Pricing →</a>
+            <a href="{% url 'billa.pricing' %}" class="btn btn-sm btn-outline-secondary">Pricing →</a>
             <a href="/admin/billa/" class="btn btn-sm btn-outline-secondary">Admin →</a>
           </div>
         </div>
@@ -130,7 +130,7 @@
             view docstrings and publishes a browsable documentation portal at /docs/.
           </p>
           <div class="d-flex gap-2">
-            <a href="/docs/" class="btn btn-sm btn-outline-secondary">Docs →</a>
+            <a href="{% url 'docca.portal' %}" class="btn btn-sm btn-outline-secondary">Docs →</a>
             <a href="/admin/docca/" class="btn btn-sm btn-outline-secondary">Admin →</a>
           </div>
         </div>
@@ -146,10 +146,11 @@
         <div class="p-4">
           <p class="text-secondary mb-4" style="line-height:1.65;">
             Landing page and endpoint catalog. Pulls live data from the other apps to render
-            the hero page, endpoint browser, and navigation — no manual configuration needed.
+            the hero page, endpoint browser, and navigation — no manual configuration needed. Its own home page is one click away.
           </p>
           <div class="d-flex gap-2">
-            <a href="/endpoints/" class="btn btn-sm btn-outline-secondary">Endpoints →</a>
+            <a href="{% url 'romma.index' %}" class="btn btn-sm btn-outline-secondary">Home page →</a>
+            <a href="{% url 'romma.endpoints' %}" class="btn btn-sm btn-outline-secondary">Endpoints →</a>
             <a href="/admin/docca/" class="btn btn-sm btn-outline-secondary">Admin →</a>
           </div>
         </div>

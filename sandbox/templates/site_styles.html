@@ -86,4 +86,10 @@
     font-weight: 600;
     color: #6c757d;
   }
+
+  /* The hero rows use Bootstrap's g-5 (3rem gutters), which is wider than the container's own padding
+     on a phone and pushes the page ~12px past the screen edge. Keep the default gutter on small screens. */
+  @media (max-width: 575.98px) {
+    .site-hero .row { --bs-gutter-x: 1.5rem; }
+  }
 </style>
