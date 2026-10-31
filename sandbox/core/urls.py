@@ -3,6 +3,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
 
+# Admin branding follows the site name (REGGI_SITE_NAME, default "API-Suite").
+admin.site.site_header = settings.REGGI_SITE_NAME
+admin.site.site_title = settings.REGGI_SITE_NAME
+admin.site.index_title = 'Administration'
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('account/', include('reggi.urls')),

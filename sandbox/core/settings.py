@@ -107,7 +107,7 @@ TIME_ZONE = 'UTC'
 
 SESSION_COOKIE_NAME = 'sessionid_api'
 
-REGGI_SITE_NAME = os.environ.get('REGGI_SITE_NAME', 'API')
+REGGI_SITE_NAME = os.environ.get('REGGI_SITE_NAME', 'API-Suite')
 
 DOCCA_APP_DESCRIPTIONS = {
     'reggi': (
