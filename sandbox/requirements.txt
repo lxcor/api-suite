@@ -1,0 +1,8 @@
+-e ../docca
+-e ../reggi
+-e ../kotta
+-e ../billa
+-e ../romma
+-e ../tools
+django>=4.2,<5.0
+requests>=2.28

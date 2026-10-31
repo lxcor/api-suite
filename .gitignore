@@ -9,3 +9,6 @@ venv/
 *.egg
 .DS_Store
 .env
+sandbox/db.sqlite3
+sandbox/staticfiles/
+sandbox/media/
