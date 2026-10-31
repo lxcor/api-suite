@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-SESSION="web-api-suite"
+SESSION="web-sophia.lxcor.com"
 
 cd "$(dirname "$0")"
 
